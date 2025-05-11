@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  plex:
+    image: linuxserver/plex:latest
+    container_name: plex
+    network_mode: synobridge
+    environment:
+      - PUID=1027
+      - PGID=65536
+      - VERSION=docker
+      - TZ=America/New_York   # Change to your timezone
+      - PLEX_CLAIM=claim-DW48XPmp6uE1tPTz29m_
+    volumes:
+      - /volume1/data:/data
+      - /volume1/configs/plex:/config
+      - /volume1/downloads:/downloads
+    devices:
+      - /dev/dri:/dev/dri  # For Intel Quick Sync hardware transcoding
+    ports:
+      - 32400:32400
+    restart: unless-stopped 

@@ -1,0 +1,93 @@
+# Synology Shared Folders: synoshare Data Dump
+
+## data
+```
+Name .......[data]
+Comment ....[Media Files]
+Path .......[/volume1/data]
+Deny list ..[]
+RW list ....[]
+RO list ....[]
+fType ......[2]
+fBrowseable [yes]
+FTPPrivilege[0]
+Status .....[0x1880]
+WinShare .....[yes]
+ACL ..........[yes]
+Skip smb perm.[yes]
+Permit .......[yes]
+RecycleBin....[no]
+RecycleBinAdminOnly....[no]
+HideUnreadable ........[no]
+Snapshot browsing .....[no]
+On Cold Storage Volume.....[no]
+```
+
+## docker
+```
+Name .......[docker]
+Comment ....[]
+Path .......[/volume1/docker]
+Deny list ..[]
+RW list ....[]
+RO list ....[]
+fType ......[2]
+fBrowseable [yes]
+FTPPrivilege[0]
+Status .....[0x1880]
+WinShare .....[yes]
+ACL ..........[yes]
+Skip smb perm.[yes]
+Permit .......[yes]
+RecycleBin....[no]
+RecycleBinAdminOnly....[no]
+HideUnreadable ........[no]
+Snapshot browsing .....[no]
+On Cold Storage Volume.....[no]
+```
+
+## downloads
+```
+Name .......[downloads]
+Comment ....[]
+Path .......[/volume1/downloads]
+Deny list ..[]
+RW list ....[]
+RO list ....[]
+fType ......[2]
+fBrowseable [yes]
+FTPPrivilege[0]
+Status .....[0x1880]
+WinShare .....[yes]
+ACL ..........[yes]
+Skip smb perm.[yes]
+Permit .......[yes]
+RecycleBin....[no]
+RecycleBinAdminOnly....[no]
+HideUnreadable ........[no]
+Snapshot browsing .....[no]
+On Cold Storage Volume.....[no]
+```
+
+## configs
+```
+Name .......[configs]
+Comment ....[]
+Path .......[/volume1/configs]
+Deny list ..[]
+RW list ....[]
+RO list ....[]
+fType ......[2]
+fBrowseable [yes]
+FTPPrivilege[0]
+Status .....[0x1880]
+WinShare .....[yes]
+ACL ..........[yes]
+Skip smb perm.[yes]
+Permit .......[yes]
+RecycleBin....[no]
+RecycleBinAdminOnly....[no]
+HideUnreadable ........[no]
+Snapshot browsing .....[no]
+On Cold Storage Volume.....[no]
+``` 
