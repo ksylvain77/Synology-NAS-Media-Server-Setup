@@ -1,0 +1,300 @@
+[
+  {
+    "url": "https://drfrankenstein.co.uk/step-1-directory-setup-guide-2/",
+    "paragraphs": [
+      "Container Manager Install",
+      "When installing Container Manager for the first time it will automatically create your docker shared folder, so there is no need to create this manually. If you have an NVMe or SATA SSD volume make sure you install the package to it for optimal performance.",
+      "Docker path adjustments for NVMe or SATA SSD volumes",
+      "If you are using a NVMe or SSD volume you will need to adjust the storage volume shown in each guide for any /docker share to the correct volume number for your fast storage. The /data share remains on your larger hard drive volume.",
+      "For example for Plex it would look like this assuming your volume numbers are volume 1 (hard drives) volume 2 (NVMe/SSD)",
+      "Media Folder Set up",
+      "When passing folders into a Docker container each mount point is treated as its own filesystem.",
+      "This means when moving files between two mount points Docker will do a Copy, then Delete operation. Meaning you are creating a full duplicate of a file while its being \u2018moved\u2019 creating unwanted disk IO and temporarily taking up double the space. (especially when seeding torrents after copying to the final folders)",
+      "In order to avoid this we need to set up a clean directory structure that allows us to just have one folder or share mounted to our containers.",
+      "If you are starting with these guides and have existing media you may need to move around your data in line with this setup, I recommend creating all the folders below using File station to avoid potential permission issues later.",
+      "Directory Structure",
+      "With this setup all of your media will sit within a single share, you can call this whatever you want but in all the guides it will be called \u2018data\u2019. If you change its name you will need to adjust any steps or compose files from my guides accordingly.",
+      "Please note: it is important that you make a decision around whether to use lowercase or Uppercase folder names, I recommend just stick with lowercase everywhere as it simplifies setup. If you decide to go against this ensure you change all the volume maps in the guides to match the case!Otherwise, containers and you will be very confused.",
+      "Open up the control panel then in \u2018Shared Folder\u2019 hit \u2018Create\u2019",
+      "Screen 1\u2013 fill out the name as \u2018data\u2019 and use Volume 1 for its storage location (Your main hard drive volume)",
+      "Screen 2\u2013 we leave the folder unencrypted and don\u2019t enable write once features",
+      "Screen 3\u2013 Enable data checksums as this will help catch any issues with files during data scrubbing. (These options will not appear if you have ext4 file system \u2013 If you are starting this with a clean NAS go back change to BTRFS if possible)",
+      "Screen 4\u2013 just click next past the summary",
+      "On the final screen we don\u2019t need to change any user permissions yet, we will do that in the second guide.",
+      "The Sub-folders",
+      "Now we have our main \u2018data\u2019 directory we need to create a number of sub-folders to hold our media and downloaded files. You can amend this depending on whether you are using Torrents or Usenet (Newsgroups) or both.",
+      "You will initially create 3 folders within/data",
+      "media",
+      "torrents",
+      "usenet",
+      "Then under/data/mediacreate",
+      "movies",
+      "music",
+      "tv",
+      "books",
+      "Then under/data/torrentscreate",
+      "completed",
+      "incoming",
+      "watch",
+      "Then under/data/usenetcreate",
+      "completed",
+      "intermediate",
+      "nzb",
+      "queue",
+      "Your folder tree should now look like this.",
+      "Finally, within the/dockershared folder create a folder called \u2018projects\u2018 which will be used for any containers using the Projects (Docker Compose)  feature of Container Manager.",
+      "You can now go back to where you left off in the guides and do the next step.",
+      "Looking for some help, join our Discord community",
+      "If you are struggling with any steps in the  guides or looking to branch out into other containers join our Discord community!",
+      "Buy me a beverage!",
+      "If you have found my site useful please consider pinging me a tip as it helps cover the cost of running things or just lets me stay hydrated. Plus 10% goes to the devs of the apps I do guides for every year."
+    ],
+    "code_blocks": [
+      "volumes:-/volume2/docker/plex:/config-/volume1/data/media:/data/media",
+      "volumes:-/volume2/docker/plex:/config-/volume1/data/media:/data/media"
+    ],
+    "images": [
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2021/07/image-4-1024x187.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2021/07/image-5.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2024/04/image.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2021/07/image-7.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2021/07/image-8.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2021/07/image-9.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/07/image-1-20220715-203145.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/12/discord-1024x683.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/bmc-button-300x84.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/05/kofi_bg_tag_dark84.png",
+        "is_screenshot": false
+      }
+    ],
+    "external_links": []
+  },
+  {
+    "url": "https://drfrankenstein.co.uk/step-2-setting-up-a-restricted-docker-user-and-obtaining-ids/",
+    "paragraphs": [
+      "It is good practice to set up a unique user and group with limited share and application access for your containers. We won\u2019t ever be using this user to log into DSM it is purely for Docker.",
+      "Creating a Group",
+      "First up we  will create a specific docker group that our docker user will belong, this allows us to segregate the permissions from the normal \u2018users\u2019 group from Docker. This is useful as you may have other users on your NAS that you don\u2019t want to have access to certain folders by default.",
+      "Navigate into the DSM control panel and open up \u2018User & Group\u2019 then click on Group and Create",
+      "In the screen that appears we will name the group \u2018dockergroup\u2019 (imaginative right) and you can give it a description if you wish",
+      "Click Next, we won\u2019t be adding any users to the group yet (that\u2019s the next section)",
+      "On the next screen we will grant the Group Read/Write permissions to the \u2018data\u2019 and \u2018docker\u2019 shares we created in the previous guide. Click Next. (Please note you may not have a \u2018data\u2019 share if you are following one of the guides that doesn\u2019t require it!)",
+      "On the next screen you do not need to amend the groups Quotas so click Next",
+      "We will now deny all access to inbuilt apps as this group and any users within it do not need access.",
+      "On the final settings screen we don\u2019t need to set any speed limits",
+      "On the final screen click Done.",
+      "Creating a User",
+      "You can call the user whatever you want, I just kept mine simple and created one called \u2018dockerlimited\u2019",
+      "It\u2019s also a good idea to generate a very strong random password for the user, while it will be a very limited account you don\u2019t want to give it an easy to guess password. You will never need this password for what we are doing.",
+      "Next we are going to add this new user to the \u2018dockergroup\u2019 we just created  as we don\u2019t want it having any sort of admin access.",
+      "On the next screen you should see that the user already has Read/Write access to the two shares and no others.",
+      "*Please note if you are not following one of the media setup guides you will not have the /data share so don\u2019t worry if it is missing.",
+      "Nothing to change on the User quota settings just click \u2018Next\u2019",
+      "You will see that our User already has restricted access to apps",
+      "Again we don\u2019t need to set any speed limits for this user so click on \u2018Next\u2019",
+      "The final screen will just confirm your settings make sure the correct shares are in the \u2018Writeable\u2019 list, click on \u2018Done\u2019 and your user will be created.",
+      "Obtaining the new UID (User ID) & GID (Group ID)",
+      "Now we need to obtain the IDs for the newdockerlimiteduser anddockergroupThese are used to pass file permissions through to our containers. They can also be known as PUID and PGID.",
+      "You will need to SSH into your Diskstation using \u2018Terminal\u2019 which is built in to modern versions of Windows, Linux, or Mac.",
+      "Go back into the Control Panel again and enable SSH within the Terminal & SNMP section.",
+      "Open up \u2018Terminal\u2019",
+      "Now type ssh then your main admin account username @ your NAS IP Address and hit Enter (Not the docker user)",
+      "You will then be asked to enter the password for the user you used, you can either type this or right click in the window to paste (you won\u2019t see it paste the info) then press enter.",
+      "Once logged in type the below replacing \u2018dockerlimited\u2019 with the name of the user you created if you changed it.",
+      "You will now see a similar output as the below\u2026",
+      "Let\u2019s break this down!",
+      "uid=1027(dockerlimited)This is our UIDwrite this down!",
+      "gid=100(users)groups=100(users)While this is a GID it is not the one we are interested in as it is for the standard users group soignorethis.",
+      "65537(dockergroup)This is our actual GID that we want to use for our containers sowrite this downas your GID.",
+      "You have now successfully set up your limited access user and obtained its IDs for use in Docker. Keep note of these somewhere as you will use them a lot with Docker.",
+      "You can now disable the SSH service as we won\u2019t be using it.",
+      "You can now go back to the guide you were following.",
+      "Permission Fixes",
+      "See the new dedicated page",
+      "Looking for some help, join our Discord community",
+      "If you are struggling with any steps in the  guides or looking to branch out into other containers join our Discord community!",
+      "Buy me a beverage!",
+      "If you have found my site useful please consider pinging me a tip as it helps cover the cost of running things or just lets me stay hydrated. Plus 10% goes to the devs of the apps I do guides for every year."
+    ],
+    "code_blocks": [
+      "dockerlimited",
+      "dockergroup",
+      "sshdrfrankenstein@192.168.0.101",
+      "sshdrfrankenstein@192.168.0.101",
+      "iddockerlimited",
+      "iddockerlimited",
+      "uid=1027(dockerlimited)gid=100(users)groups=100(users),65537(dockergroup)",
+      "uid=1027(dockerlimited)gid=100(users)groups=100(users),65537(dockergroup)",
+      "uid=1027(dockerlimited)",
+      "gid=100(users)groups=100(users)",
+      "65537(dockergroup)"
+    ],
+    "images": [
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2021/07/image-1.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-27-1024x241.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-28.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-29.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-30.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-38.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-39.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-40.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-34.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2021/07/image-12.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-35.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-36.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-37.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-41.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2021/07/image-17.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-42.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2021/07/image-19-1024x577.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-1.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/12/discord-1024x683.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/bmc-button-300x84.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/05/kofi_bg_tag_dark84.png",
+        "is_screenshot": false
+      }
+    ],
+    "external_links": []
+  },
+  {
+    "url": "https://drfrankenstein.co.uk/step-3-setting-up-a-docker-bridge-network-in-container-manager/",
+    "paragraphs": [
+      "We are now going to set up a Docker Bridge Network, we are doing this for consistency across the guides here. It also allows us to have more control over the ports containers use in case we want to avoid certain port ranges that DSM uses.",
+      "While most containers will happily work without doing this step it is good practice to set up a specific Bridge rather than using the default bridge or Network Host mode.",
+      "Let\u2019s Begin",
+      "Open up the Container Manager and go into the Network tab.",
+      "Next click on \u2018Add\u2019 which brings up the settings screen. In here we are going to specify the following values.",
+      "Now click \u2018Apply\u2019 which will take you back to the original screen.",
+      "That\u2019s it the Bridge is now ready for containers to be attached to it. You can go back to the guide you were following.",
+      "Optional Steps if you have the Synology Firewall Enabled",
+      "If you have the Synology Firewall enabled and configured to block incoming or outgoing connections you will need to do this step. Otherwise, you will have issues with your containers being able to contact each other.",
+      "Go into Control Panel > Security > Firewall",
+      "Click on Edit Rules and in the screen that appears click on \u2018Create\u2019",
+      "In the first screen select \u2018All\u2019 and \u2018Specific IP\u2019 then press \u2018Select\u2019",
+      "Then select \u2018IP Range\u2019 and enter \u2018172.20.0.1\u2019 in \u2018From:\u2019 and \u2018172.20.255.254\u2019 in \u2018To:\u2019",
+      "Press OK until you are back to the main Firewall screen and press Apply.",
+      "You can now go back to the guide you were following."
+    ],
+    "code_blocks": [],
+    "images": [
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-34-1024x494.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-35.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/03/image-22-1024x580.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/03/image-24.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/09/image-30.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/09/image-36.png",
+        "is_screenshot": false
+      }
+    ],
+    "external_links": []
+  }
+]

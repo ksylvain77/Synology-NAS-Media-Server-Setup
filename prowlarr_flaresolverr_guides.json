@@ -1,0 +1,114 @@
+[
+  {
+    "url": "https://drfrankenstein.co.uk/prowlarr-and-flaresolverr-in-container-manager-on-a-synology-nas/",
+    "paragraphs": [
+      "What is Prowlarr and FlareSolverr?",
+      "Prowlarr is an application that combines your various indexers for Torrents and Usenet into one place, it then syncs all the indexer settings automatically with Sonarr, Radarr etc. FlareSolverr is an additional proxy which helps bypass Cloudflare protection that many indexers use.",
+      "If you plan on adding this to your GlueTUN VPN setup see the left menu for the alternative guide.",
+      "Let\u2019s Begin",
+      "In order for you to successfully use this guide please complete these two guides and come back here.",
+      "Step 2: Setting up a restricted Docker user",
+      "Step 3: Setting up a Docker Bridge Network",
+      "Folder Setup",
+      "Let\u2019s start by getting some folders set up for the containers to use. Open up File Station create the following.",
+      "Container Manager",
+      "Next we are going to set up a \u2018Project\u2019 in Container Manager. Open up Container Manager and click on Project then on the right-hand side click \u2018Create\u2019.",
+      "In the next screen we will set up our General Settings, enter the following:",
+      "Next we are going to drop in our docker compose configuration copy all the code in the box below and paste it into line \u20181\u2019 just like the screenshot.",
+      "Environment Variables",
+      "We need to make some changes in order for the container to have the correct permissions to save its configuration files and to have access to your media.",
+      "Click \u2018Next\u2019",
+      "You do not need to enable anything on the \u2018Web portal settings\u2019 screen click \u2018Next\u2019 again.",
+      "On the final screen click \u2018Done\u2019 which will begin the download of the container images and once downloaded they will be launched!",
+      "The image will now be downloaded and extracted. You should see \u2018Code 0\u2019 when it has finished.",
+      "The Project should now be running with a Green status",
+      "Firewall Exceptions",
+      "(Skip if you don\u2019t have the Firewall configured)",
+      "If you have the Synology Firewall enabled please seethis additional guidefor further info on exceptions and correct set up.",
+      "Container set up complete",
+      "You should now be able to access Prowlarr via the IP of your NAS followed by the port 9696",
+      "e.g. 192.168.0.40:9696",
+      "FlareSolverr Setup",
+      "Once you have set up Prowlarr and the Indexers you want to use, you can then add FlareSolverr to the ones that require it.",
+      "Go to Settings > Indexers > Click+then select FlareSolverr",
+      "Once added enter the details as per the screenshot below \u2013 ensure you keep note of the \u2018Tags\u2019 as this is what you will add to an actual indexer to tell it to use FlareSolverr.",
+      "There are 3 possible connection options to use, try from top to bottom.",
+      "http://localhost:8191/http://172.20.0.1:8191/http://YOUR-NAS-IP:8191/",
+      "You then tag each indexer that requires FlareSolverr",
+      "FAQ",
+      "Prowlarr can\u2019t connect to my Arrs or Download Client",
+      "When setting up the connection between Prowlarr and Radarr/Sonarr/Lidarr some users have reported getting a time-out when using the NAS IP. If this happens try using the Gateway IP of the Synobridge network, which should be \u2018http://172.20.0.1\u2019. (you can see this in the Container Manager UI in Networks)",
+      "Looking for some help, join our Discord community",
+      "If you are struggling with any steps in the  guides or looking to branch out into other containers join our Discord community!",
+      "Buy me a beverage!",
+      "If you have found my site useful please consider pinging me a tip as it helps cover the cost of running things or just lets me stay hydrated. Plus 10% goes to the devs of the apps I do guides for every year."
+    ],
+    "code_blocks": [
+      "/docker/projects/prowlarr-flaresolverr-compose/docker/prowlarr",
+      "/docker/projects/prowlarr-flaresolverr-compose/docker/prowlarr",
+      "What on earth is a Docker Compose?Docker Compose allows us to define how Docker should set up one or more containers within a single configuration file. This file is yaml formatted and Container Manager uses the Projects feature to manage them.",
+      "services:linuxserver-prowlarr:image:linuxserver/prowlarr:latestcontainer_name:prowlarrenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-UMASK=022volumes:-/volume1/docker/prowlarr:/configports:-9696:9696/tcpnetwork_mode:synobridgesecurity_opt:-no-new-privileges:truerestart:alwaysflaresolverr:image:flaresolverr/flaresolverr:latestcontainer_name:flaresolverrenvironment:-TZ=Europe/London#CHANGE_TO_YOUR_TZports:-8191:8191network_mode:synobridgesecurity_opt:-no-new-privileges:truerestart:always",
+      "services:linuxserver-prowlarr:image:linuxserver/prowlarr:latestcontainer_name:prowlarrenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-UMASK=022volumes:-/volume1/docker/prowlarr:/configports:-9696:9696/tcpnetwork_mode:synobridgesecurity_opt:-no-new-privileges:truerestart:alwaysflaresolverr:image:flaresolverr/flaresolverr:latestcontainer_name:flaresolverrenvironment:-TZ=Europe/London#CHANGE_TO_YOUR_TZports:-8191:8191network_mode:synobridgesecurity_opt:-no-new-privileges:truerestart:always"
+    ],
+    "images": [
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/12/image-1.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-126.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/12/image-2.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/10/image-47.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/12/image-3.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/12/image-5.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/12/image-6-1024x493.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/11/image-2-1024x507.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/11/image-3.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/11/image-4.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/12/discord-1024x683.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/bmc-button-300x84.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/05/kofi_bg_tag_dark84.png",
+        "is_screenshot": false
+      }
+    ],
+    "external_links": [
+      "https://en.wikipedia.org/wiki/List_of_tz_database_time_zones",
+      "https://discord.gg/cp48jWH3ER",
+      "https://www.buymeacoffee.com/drfrankenstein",
+      "https://ko-fi.com/drfrankenstein"
+    ]
+  }
+]

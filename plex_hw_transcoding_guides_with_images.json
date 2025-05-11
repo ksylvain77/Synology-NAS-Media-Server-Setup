@@ -1,0 +1,135 @@
+[
+  {
+    "url": "https://drfrankenstein.co.uk/plex-in-container-manager-on-a-synology-nas-hardware-transcoding/",
+    "paragraphs": [
+      "Last updated on 19 March 2025",
+      "In this guide I am going to take you through the setup of Plex in Docker using Container Manager.",
+      "Some upcoming changes in Plex\u2019s prices at the end of April 2025 \u2013 If you have not grabbed a Lifetime Plex Pass now is the time to do it. Great video from Alex below!",
+      "Plex Pass",
+      "You will only benefit from hardware transcoding if you have an active Plex Pass either monthly or lifetime. If you don\u2019t have one you can either follow this guide or jump over to the non hardware transcoding version.",
+      "Does my Synology support Hardware Transcoding?",
+      "Before we do anything else, you need to make sure your model of Synology has hardware transcoding capabilities.  You need to do a quick lookup via the linked Google Sheet below, this is updated by Plex and makes it super easy to look up your model of NAS.",
+      "This great Google Sheet officially updated by Plex",
+      "If you find that hardware transcoding is not available on your model you can jump back over to the standard guide on the menu.",
+      "Let\u2019s Begin",
+      "As usual, it\u2019s important you complete the two proceeding guides which will get your folder structure and docker, user setup.",
+      "Step 1: Directory Setup Guide",
+      "Step 2: Setting up a restricted Docker user",
+      "Folder Setup",
+      "Let\u2019s start by getting some folders set up for the container to use. Open up File Station create the following.",
+      "Container Manager",
+      "Next we are going to set up a \u2018Project\u2019 in Container Manager. Open up Container Manager and click on Project then on the right-hand side click \u2018Create\u2019.",
+      "In the next screen we will set up our General Settings, enter the following:",
+      "Next we are going to drop in our docker compose configuration copy all the code in the box below and paste it into line \u20181\u2019 just like the screenshot.",
+      "A note on Network Mode",
+      "You will notice that for Plex we don\u2019t put it on the normal bridge network, this is because DSM reserves the DLNA ports Plex requires in order to use DLNA. So we run in Host mode, so it can share the ports.",
+      "Environment Variables",
+      "We need to make some changes in order for the container to have the correct permissions to save its configuration files  and to have access to your media.",
+      "Volumes",
+      "I have pre-filled this section to pass the correct paths, the only thing that you may need to change is the /volume1/ if your file paths are on a different volume.",
+      "Click \u2018Next\u2019",
+      "You do not need to enable anything on the \u2018Web portal settings\u2019 screen click \u2018Next\u2019 again.",
+      "On the final screen click \u2018Done\u2019 which will begin the download of the container images and once downloaded they will be launched!",
+      "The image will now be downloaded and extracted. You should see \u2018Code 0\u2019 when it has finished.",
+      "You will now see your Plex running and should have a green status on the left-hand side.",
+      "Firewall Exceptions",
+      "(Skip if you don\u2019t have the Firewall configured)",
+      "If you have the Synology Firewall enabled please seethis additional guidefor further info on exceptions and correct set up.",
+      "Port Forwarding",
+      "In order to use Plex remotely and stream your local media you need to forward port 32400 from your Router to the NAS IP on the same port. This varies for everyone\u2019s router so check the manual on how to do this.",
+      "Plex Initial Setup",
+      "After a few minutes you should be able to access the server and go through the Plex setup by going to the IP of your NAS in your browser followed by port 32400/web/",
+      "e.g. 192.168.0.45:32400/web/",
+      "You will be asked to sign in or sign up for an account if you don\u2019t have one already.",
+      "You should now be able to add your media which will be in the /data/media folder within Plex",
+      "Once you have got to the main Plex interface make sure you go into the settings and turn on",
+      "Enable HDR tone mapping",
+      "Use hardware acceleration when available",
+      "Use hardware-accelerated video encoding",
+      "That\u2019s it you are all setup. When a new server update is available you will just need to restart the container, and it will automatically download the latest update.",
+      "Looking for some help, join our Discord community",
+      "If you are struggling with any steps in the  guides or looking to branch out into other containers join our Discord community!",
+      "Buy me a beverage!",
+      "If you have found my site useful please consider pinging me a tip as it helps cover the cost of running things or just lets me stay hydrated. Plus 10% goes to the devs of the apps I do guides for every year."
+    ],
+    "code_blocks": [
+      "/docker/projects/plex-compose/docker/plex",
+      "/docker/projects/plex-compose/docker/plex",
+      "services:plex:image:linuxserver/plex:latestcontainer_name:plexnetwork_mode:hostenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-UMASK=022-VERSION=docker-PLEX_CLAIM=#Your Plex Claim Codevolumes:-/volume1/docker/plex:/config-/volume1/data/media:/data/mediadevices:-/dev/dri:/dev/drisecurity_opt:-no-new-privileges:truerestart:always",
+      "services:plex:image:linuxserver/plex:latestcontainer_name:plexnetwork_mode:hostenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-UMASK=022-VERSION=docker-PLEX_CLAIM=#Your Plex Claim Codevolumes:-/volume1/docker/plex:/config-/volume1/data/media:/data/mediadevices:-/dev/dri:/dev/drisecurity_opt:-no-new-privileges:truerestart:always"
+    ],
+    "images": [
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/10/image-91.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/05/image-1.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2024/07/image-1.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/05/image-4.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/05/image-114.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/05/image-6.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/05/image-7-1024x494.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2021/12/image-24.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/08/image-3.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2021/12/image-27-1024x442.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/12/discord-1024x683.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/bmc-button-300x84.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/05/kofi_bg_tag_dark84.png",
+        "is_screenshot": false
+      }
+    ],
+    "external_links": [
+      "https://docs.google.com/spreadsheets/d/1MfYoJkiwSqCXg8cm5-Ac4oOLPRtCkgUxU0jdj3tmMPc",
+      "https://en.wikipedia.org/wiki/List_of_tz_database_time_zones",
+      "https://discord.gg/cp48jWH3ER",
+      "https://www.buymeacoffee.com/drfrankenstein",
+      "https://ko-fi.com/drfrankenstein"
+    ],
+    "local_images": [
+      "images/plex_hw_transcoding/image-91.png",
+      "images/plex_hw_transcoding/image-1.png",
+      "images/plex_hw_transcoding/image-1.png",
+      "images/plex_hw_transcoding/image-4.png",
+      "images/plex_hw_transcoding/image-114.png",
+      "images/plex_hw_transcoding/image-6.png",
+      "images/plex_hw_transcoding/image-7-1024x494.png",
+      "images/plex_hw_transcoding/image-24.png",
+      "images/plex_hw_transcoding/image-3.png",
+      "images/plex_hw_transcoding/image-27-1024x442.png"
+    ]
+  }
+]

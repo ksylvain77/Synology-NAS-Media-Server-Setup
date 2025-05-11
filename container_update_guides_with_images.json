@@ -1,0 +1,164 @@
+[
+  {
+    "url": "https://drfrankenstein.co.uk/updating-containers-in-container-manager/",
+    "paragraphs": [
+      "Last updated on 31 December 2024",
+      "The new Container Manager makes updating container images super easy, it can all be done via the UI and no need to SSH into your NAS for updating Docker Compose projects!",
+      "Let\u2019s Begin",
+      "Head over to the Image tab in Container Manager, in the list of images you will see updates next to the \u2018Tag\u2019 field.",
+      "You will only be notified of updates for images that you have selected a general tag, such as Latest or Nightly, if you have a specific version number it will remain as is. It is also worth noting that images from GitHub or other sources outside of hub.docker.com will not receive update notices.",
+      "Click on the \u2018Update available\u2019 button next to the images you want to update, then the screen below will appear, click the Update button.",
+      "Then confirm the Update and you will see the image download in the main list.",
+      "Container Manager will automatically stop and update your running containers.",
+      "Sometimes you may find the container doesn\u2019t get reset correctly with the new image. If this is the case take the extra couple of steps. Stop the container you are updating, then from the top menu click Action > Reset.",
+      "Your container will now be running the latest image.",
+      "Extra step for Containers part of a Project",
+      "If you update a container within a Project it can cause the overall project to fail if that container relies on another. For example updating Gluetun will break the network connection for containers running through it.",
+      "Go to the Project tab and select the project you wish to rebuild, then from the Action menu press Stop.",
+      "Next click the Action Menu again but this time select build \u2013 This will remove the containers and then rebuild them with the updated images.",
+      "That\u2019s it, going forward you can easily update containers using this method.",
+      "Looking for some help, join our Discord community",
+      "If you are struggling with any steps in the  guides or looking to branch out into other containers join our Discord community!",
+      "Buy me a beverage!",
+      "If you have found my site useful please consider pinging me a tip as it helps cover the cost of running things or just lets me stay hydrated. Plus 10% goes to the devs of the apps I do guides for every year."
+    ],
+    "code_blocks": [],
+    "images": [
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-39-1024x494.png",
+        "is_screenshot": false,
+        "local_path": "images/container_updates/image-39-1024x494.png"
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-40.png",
+        "is_screenshot": false,
+        "local_path": "images/container_updates/image-40.png"
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-42.png",
+        "is_screenshot": false,
+        "local_path": "images/container_updates/image-42.png"
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-43-1024x494.png",
+        "is_screenshot": false,
+        "local_path": "images/container_updates/image-43-1024x494.png"
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-44-1024x494.png",
+        "is_screenshot": false,
+        "local_path": "images/container_updates/image-44-1024x494.png"
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/12/discord-1024x683.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/bmc-button-300x84.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/05/kofi_bg_tag_dark84.png",
+        "is_screenshot": false
+      }
+    ],
+    "external_links": []
+  },
+  {
+    "url": "https://drfrankenstein.co.uk/watchtower-automated-updates-in-container-manager-on-a-synology-nas/",
+    "paragraphs": [
+      "Last updated on 20 March 2025",
+      "What is Watchtower?",
+      "Watchtower monitors and automatically updates your containers to the latest versions for you, it is useful as it is not limited to which Docker repositories it can pull from. The Container Manager UI can only notify you of updates for container images from Docker Hub, not the popular GitHub.",
+      "Useful external links for this guide",
+      "Watchtower GitHub",
+      "Watchtower Documentation",
+      "Let\u2019s Begin",
+      "We will be setting up Watchtower using the Project functionality in Container Manager. This uses a compose file to tell Docker how to set up the container and also define some preferences.",
+      "Folder Setup",
+      "Let\u2019s start by getting a folder set up for the container to use. Open up File Station create the following.",
+      "Container Manager",
+      "Next we are going to set up a \u2018Project\u2019 in Container Manager. Open up Container Manager and click on Project then on the right-hand side click \u2018Create\u2019.",
+      "In the next screen we will set up our General Settings, enter the following:",
+      "We have a couple of different composes available below, the first one is configured to updateallrunning containers at 2am daily.",
+      "As an addition to the method above you can exclude specific containers from updates by adding this line to their yaml (compose) details. This is likely faster than using method 2",
+      "The second has an added section where you canspecifythe names of thecontainersyou would like to update (use the exact name of the container as per the Synology UI)",
+      "You can copy and paste the one you wish to use into the blank section in Container Manager.",
+      "Environment Variables",
+      "We need to make some changes in order for watchtower to know what time it is where you are and what we want it to do. You can amend these in the compose based on your preferences.",
+      "Click \u2018Next\u2019",
+      "You do not need to enable anything on the \u2018Web portal settings\u2019 screen click \u2018Next\u2019 again",
+      "On the final screen click Done which will begin the download of the container images and once downloaded they will be launched!",
+      "The image will now be downloaded and extracted. You should see \u2018Code 0\u2019 when it has finished.",
+      "You will now see your watchtower project running it should have a green status on the left-hand side.",
+      "You can now just leave Watchtower running you will never need to manually update your containers again.",
+      "FAQ",
+      "I keep getting X container has stopped unexpectedly errors!DSM does not know or understand that Watchtower is issuing commands in the background. So it makes the assumption that a container was stopped unexpectedly, but we know it was Watchtower doing an update.",
+      "Do I need to update Watchtower itself?Nope it updates itself \u2013 quite clever really.",
+      "Looking for some help, join our Discord community",
+      "If you are struggling with any steps in the  guides or looking to branch out into other containers join our Discord community!",
+      "Buy me a beverage!",
+      "If you have found my site useful please consider pinging me a tip as it helps cover the cost of running things or just lets me stay hydrated. Plus 10% goes to the devs of the apps I do guides for every year."
+    ],
+    "code_blocks": [
+      "/docker/projects/watchtower-compose",
+      "/docker/projects/watchtower-compose",
+      "services:watchtower:image:containrrr/watchtower:latestcontainer_name:watchtowerenvironment:-TZ=YOURTIMEZONE-WATCHTOWER_CLEANUP=true-WATCHTOWER_INCLUDE_STOPPED=true-WATCHTOWER_REVIVE_STOPPED=false-WATCHTOWER_SCHEDULE=0 0 2 * * *volumes:-/var/run/docker.sock:/var/run/docker.sockrestart:unless-stopped",
+      "services:watchtower:image:containrrr/watchtower:latestcontainer_name:watchtowerenvironment:-TZ=YOURTIMEZONE-WATCHTOWER_CLEANUP=true-WATCHTOWER_INCLUDE_STOPPED=true-WATCHTOWER_REVIVE_STOPPED=false-WATCHTOWER_SCHEDULE=0 0 2 * * *volumes:-/var/run/docker.sock:/var/run/docker.sockrestart:unless-stopped",
+      "labels:-com.centurylinklabs.watchtower.enable=false",
+      "labels:-com.centurylinklabs.watchtower.enable=false",
+      "services:watchtower:image:containrrr/watchtower:latestcontainer_name:watchtowerenvironment:-TZ=YOURTIMEZONE-WATCHTOWER_CLEANUP=true-WATCHTOWER_INCLUDE_STOPPED=true-WATCHTOWER_REVIVE_STOPPED=false-WATCHTOWER_SCHEDULE=0 0 2 * * *command:# add or remove the below as required-overseerr-plex-prowlarr-radarr-sonarr-tautulli-watchtowervolumes:-/var/run/docker.sock:/var/run/docker.sockrestart:unless-stopped",
+      "services:watchtower:image:containrrr/watchtower:latestcontainer_name:watchtowerenvironment:-TZ=YOURTIMEZONE-WATCHTOWER_CLEANUP=true-WATCHTOWER_INCLUDE_STOPPED=true-WATCHTOWER_REVIVE_STOPPED=false-WATCHTOWER_SCHEDULE=0 0 2 * * *command:# add or remove the below as required-overseerr-plex-prowlarr-radarr-sonarr-tautulli-watchtowervolumes:-/var/run/docker.sock:/var/run/docker.sockrestart:unless-stopped"
+    ],
+    "images": [
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/10/image-65.png",
+        "is_screenshot": false,
+        "local_path": "images/container_updates/image-65.png"
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-119.png",
+        "is_screenshot": false,
+        "local_path": "images/container_updates/image-119.png"
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/10/image-66.png",
+        "is_screenshot": false,
+        "local_path": "images/container_updates/image-66.png"
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/10/image-67.png",
+        "is_screenshot": false,
+        "local_path": "images/container_updates/image-67.png"
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-121.png",
+        "is_screenshot": false,
+        "local_path": "images/container_updates/image-121.png"
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/10/image-68.png",
+        "is_screenshot": false,
+        "local_path": "images/container_updates/image-68.png"
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-123-1024x494.png",
+        "is_screenshot": false,
+        "local_path": "images/container_updates/image-123-1024x494.png"
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/12/discord-1024x683.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/bmc-button-300x84.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/05/kofi_bg_tag_dark84.png",
+        "is_screenshot": false
+      }
+    ],
+    "external_links": []
+  }
+]

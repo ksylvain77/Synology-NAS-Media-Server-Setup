@@ -1,0 +1,134 @@
+{
+  "url": "https://drfrankenstein.co.uk/arrs-media-project/",
+  "paragraphs": [
+    "The Arrs are a suite of apps they help you both organise and obtain media from various sources online. This guide will give you the core items your need for managing Movies, TV Shows, Subtitles, Music and Books as well as a central search app called Prowlarr.",
+    "Sonarr for TV",
+    "Radarr for Movies",
+    "Lidarr for Music",
+    "Readarr for Books and Audiobooks",
+    "Bazarr for Subtitles",
+    "Prowlarr for Search",
+    "If you only want a subset of these items you can adjust the setup according to your needs.",
+    "Useful external links for this guide",
+    "Servarr.wiki (Official Documentation)Linuxserver.io (Documentation for the Containers)",
+    "Let\u2019s Begin",
+    "In order for you to successfully use this guide please complete the three initial setup guides if you have not done so already",
+    "Docker Package, SSD and Memory Recommendations",
+    "Step 1: Directory Setup Guide",
+    "Step 2: Setting up a restricted Docker user",
+    "Step 3: Setting up a Docker Bridge Network (synobridge)",
+    "As Container  Manager now supports using Docker Compose in the UI we will be using it as it will save you lots of time and steps!",
+    "Folder Setup",
+    "First we need to set up some folders for the Arr\u2019s to save their configuration files and also where the Project will save the compose.",
+    "Using File Station create the following folders. (Skip ones you don\u2019t need)",
+    "Container Set Up",
+    "Next we are going to set up a \u2018Project\u2019 in Container Manager. Open up Container Manager and click on Project, then on the right-hand side click \u2018Create\u2019.",
+    "In the next screen we will set up our General Settings.",
+    "Next we are going to drop in our docker compose configuration, copy all the code in the box below and paste it into line \u20181\u2019",
+    "A couple of notes:",
+    "I am pulling these images directly from Docker Hub and not lscr.io this is because container manager can\u2019t check for updates on third party repos",
+    "The folder structure across my guides will result in Hard links for torrents",
+    "I have split out Prowlarr as you may want this running on a VPN connection if your ISP blocks certain indexers. If not copy this section into your compose as well. See the side menu for adding this to GlueTUN.",
+    "Editing the Compose & Environment Variables",
+    "Please keep in mind that YAML formatting is very specific, so keep things lined up as per the original.",
+    "The compose contains all the Arr\u2019s in the overall stack, you can remove any you don\u2019t plan on using by deleting their entire section in the code.",
+    "We need to make some minor edits to the compose file in order to make sure the containers use the \u2018dockerlimited\u2019 user we created earlier and also let them know which timezone we are located. You will need to edit these in each section noted with \u2018#change me\u2019",
+    "Once you have made all your required edits click \u2018Next\u2019",
+    "Nothing to change on the next screen click \u2018Next\u2019 again..",
+    "On the final screen just click \u2018Done\u2019 and you will see a new window appear which will kick of downloading of the required container image and configure the containers.",
+    "This can take a couple of minutes to finish as all the images are downloaded and extracted. You should see \u2018Code 0\u2019 when it has finished.",
+    "Once finished you will see the Project is running with a green status.",
+    "Firewall Exceptions",
+    "(Skip if you don\u2019t have the Firewall configured)",
+    "If you have the Synology Firewall enabled please seethis additional guidefor further info on exceptions and correct set up.",
+    "Containers are ready to use",
+    "You will now be able to access each of the containers on their respective ports.",
+    "Please see the next section which covers the \u2018basics\u2019 of each application setup as these usually catch people out. Full documentation can be found onhttps://wiki.servarr.com/",
+    "Key Settings within the Arrs",
+    "Settings > Media Management > Root Folders",
+    "Each of the Arr\u2019s refer to the place(s) you keep your media as \u2018Root Folders\u2019. These are where the app will ultimately move your music/movies/books/shows once they finish downloading. Use the table below to set each of your folders correctly.",
+    "You will see other folders when you first browse for the /data folder it is located in the top level folder.",
+    "Settings > Media Management > Remote Path Mappings",
+    "While most of the settings on this page are self-explanatory something that has caught people out is the Remote Path Mappings setting. If you are hosting all your services on the same NAS  and in Docker do not add any settings here.",
+    "Settings > Download Client(s)> Add your Client > Host and Port",
+    "As our containers are all running on the \u2018synobridge\u2019 custom bridge we can use the Gateway IP for this bridge for inter container networking. This will be172.20.0.1and the appropriate port for your Client assuming it is running in Docker!",
+    "You should now have the basics in place and I 100% recommend having a look at the previously mentionedhttps://wiki.servarr.com/documentation as it will help you understand how the Arrs work.",
+    "Other settings for the Arrs",
+    "While I covered some very basics you really need to make use of the documentation, it goes into detail of how and why the core functions work across the apps. You can find it on theServarr Wiki.",
+    "Warning about download location not being available",
+    "Recently on initial setup we have been seeing the below Health message \u2013 if your \u201c/data\u201d folder is reporting its free and total space you should be able to ignore this and it will vanish once a download is successfully imported",
+    "FAQ",
+    "Migration from old guides.",
+    "If you followed my older guides where you set up each of these containers in the Container Manager UI or Pre DSM7.2 Docker UI you can follow this one to migrate in a couple of steps.",
+    "Stop and delete the existing containers but keep your directories!",
+    "Follow the rest of this guide and all your existing configs will be kept using your old files.",
+    "Looking for some help, join our Discord community",
+    "If you are struggling with any steps in the  guides or looking to branch out into other containers join our Discord community!",
+    "Buy me a beverage!",
+    "If you have found my site useful please consider pinging me a tip as it helps cover the cost of running things or just lets me stay hydrated. Plus 10% goes to the devs of the apps I do guides for every year."
+  ],
+  "code_blocks": [
+    "What on earth is a Docker Compose?Docker Compose allows us to define how Docker should set up one or more containers within a single configuration file. This file is yaml formatted and Container Manager uses the Projects feature to manage them.",
+    "/docker/projects/arrs-compose - Required/docker/radarr/docker/sonarr/docker/lidarr/docker/prowlarr/docker/bazarr/docker/readarr",
+    "/docker/projects/arrs-compose - Required/docker/radarr/docker/sonarr/docker/lidarr/docker/prowlarr/docker/bazarr/docker/readarr",
+    "services:sonarr:image:linuxserver/sonarr:latestcontainer_name:sonarrenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-UMASK=022volumes:-/volume1/docker/sonarr:/config-/volume1/data:/dataports:-8989:8989/tcpnetwork_mode:synobridgesecurity_opt:-no-new-privileges:truerestart:alwayslidarr:image:linuxserver/lidarr:latestcontainer_name:lidarrenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-UMASK=022volumes:-/volume1/docker/lidarr:/config-/volume1/data:/dataports:-8686:8686/tcpnetwork_mode:synobridgesecurity_opt:-no-new-privileges:truerestart:alwaysradarr:image:linuxserver/radarr:latestcontainer_name:radarrenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-UMASK=022volumes:-/volume1/docker/radarr:/config-/volume1/data:/dataports:-7878:7878/tcpnetwork_mode:synobridgesecurity_opt:-no-new-privileges:truerestart:alwaysreadarr:image:linuxserver/readarr:developcontainer_name:readarrenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-UMASK=022volumes:-/volume1/docker/readarr:/config-/volume1/data/:/dataports:-8787:8787/tcpnetwork_mode:synobridgesecurity_opt:-no-new-privileges:truerestart:alwaysbazarr:image:linuxserver/bazarr:latestcontainer_name:bazarrenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-UMASK=022volumes:-/volume1/docker/bazarr:/config-/volume1/data/:/dataports:-6767:6767/tcpnetwork_mode:synobridgesecurity_opt:-no-new-privileges:truerestart:always",
+    "services:sonarr:image:linuxserver/sonarr:latestcontainer_name:sonarrenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-UMASK=022volumes:-/volume1/docker/sonarr:/config-/volume1/data:/dataports:-8989:8989/tcpnetwork_mode:synobridgesecurity_opt:-no-new-privileges:truerestart:alwayslidarr:image:linuxserver/lidarr:latestcontainer_name:lidarrenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-UMASK=022volumes:-/volume1/docker/lidarr:/config-/volume1/data:/dataports:-8686:8686/tcpnetwork_mode:synobridgesecurity_opt:-no-new-privileges:truerestart:alwaysradarr:image:linuxserver/radarr:latestcontainer_name:radarrenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-UMASK=022volumes:-/volume1/docker/radarr:/config-/volume1/data:/dataports:-7878:7878/tcpnetwork_mode:synobridgesecurity_opt:-no-new-privileges:truerestart:alwaysreadarr:image:linuxserver/readarr:developcontainer_name:readarrenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-UMASK=022volumes:-/volume1/docker/readarr:/config-/volume1/data/:/dataports:-8787:8787/tcpnetwork_mode:synobridgesecurity_opt:-no-new-privileges:truerestart:alwaysbazarr:image:linuxserver/bazarr:latestcontainer_name:bazarrenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-UMASK=022volumes:-/volume1/docker/bazarr:/config-/volume1/data/:/dataports:-6767:6767/tcpnetwork_mode:synobridgesecurity_opt:-no-new-privileges:truerestart:always",
+    "prowlarr:image:linuxserver/prowlarr:latestcontainer_name:prowlarrenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-UMASK=022volumes:-/volume1/docker/prowlarr:/configports:-9696:9696/tcpnetwork_mode:synobridgesecurity_opt:-no-new-privileges:truerestart:always",
+    "prowlarr:image:linuxserver/prowlarr:latestcontainer_name:prowlarrenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-UMASK=022volumes:-/volume1/docker/prowlarr:/configports:-9696:9696/tcpnetwork_mode:synobridgesecurity_opt:-no-new-privileges:truerestart:always"
+  ],
+  "images": [
+    {
+      "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-8.png",
+      "is_screenshot": false
+    },
+    {
+      "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/05/image-37.png",
+      "is_screenshot": false
+    },
+    {
+      "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-9.png",
+      "is_screenshot": false
+    },
+    {
+      "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-10.png",
+      "is_screenshot": false
+    },
+    {
+      "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/07/image-36.png",
+      "is_screenshot": false
+    },
+    {
+      "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-11.png",
+      "is_screenshot": false
+    },
+    {
+      "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-12.png",
+      "is_screenshot": false
+    },
+    {
+      "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-14-1024x492.png",
+      "is_screenshot": false
+    },
+    {
+      "url": "https://drfrankenstein.co.uk/wp-content/uploads/2024/06/image-2-1024x585.png",
+      "is_screenshot": false
+    },
+    {
+      "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-54-1024x394.png",
+      "is_screenshot": false
+    },
+    {
+      "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/12/discord-1024x683.png",
+      "is_screenshot": false
+    },
+    {
+      "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/bmc-button-300x84.png",
+      "is_screenshot": false
+    },
+    {
+      "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/05/kofi_bg_tag_dark84.png",
+      "is_screenshot": false
+    }
+  ],
+  "external_links": []
+}

@@ -1,0 +1,150 @@
+[
+  {
+    "url": "https://drfrankenstein.co.uk/qbittorrent-container-manager-on-a-synology-nas/",
+    "paragraphs": [
+      "Last updated on 21 April 2025",
+      "What is qBittorrent?",
+      "qBittorrent is a torrent downloader used to both manage torrent downloading and seeding.",
+      "If you are looking to combine a VPN with this set up see the GlueTUN guide on the left Menu",
+      "Useful external links for this guide",
+      "Linuxserver qBittorrent Container GitHubqBittorrent Forums",
+      "Let\u2019s Begin",
+      "In this guide I will take you through the steps to get qBittorrent up and running in Docker",
+      "In order for you to successfully use this guide, please complete the three preceding guides",
+      "Docker Package, SSD and Memory Recommendations",
+      "Step 1: Directory Setup Guide",
+      "Step 2: Setting up a restricted Docker user",
+      "Step 3: Setting up a Docker Bridge Network (synobridge)",
+      "Folder Setup",
+      "Let\u2019s start by getting some folders set up for the containers to use. Open up File Station create the following.",
+      "Container Manager",
+      "Next we are going to set up a \u2018Project\u2019 in Container Manager, a project is used when you want one or more to all be loaded together and uses Docker Compose to do this.",
+      "Open up Container Manager and click on Project then on the right-hand side click \u2018Create\u2019",
+      "In the next screen we will set up our General Settings, enter the following:",
+      "Next we are going to drop in our docker compose configuration copy all the code in the box below and paste it into line \u20181\u2019 just like the screenshot",
+      "Environment Variables",
+      "We are now going to amend some key variables to make sure the container has access to our folders and also knows where we are in the world. Don\u2019t change any other settings other than those I mention.",
+      "Ports",
+      "Nothing to change here, the web UI will run on port 8090 and the ports we will be using for the torrent protocol will be 9854 for TCP and UDP.",
+      "Volumes",
+      "By default, I have assumed you have your config files stored on /volume1 if these are located on another volume amend this line accordingly.",
+      "Click \u2018Next\u2019",
+      "You do not need to enable anything on the \u2018Web portal settings\u2019 screen click \u2018Next\u2019 again",
+      "On the final screen click Done which will begin the download of the container images and once downloaded they will be launched!",
+      "The images will now be downloaded and extracted. You should see \u2018Code 0\u2019 when it has finished.",
+      "You will now see your qbit-project running with a green status on the left-hand side.",
+      "Firewall Exceptions",
+      "(Skip if you don\u2019t have the Firewall configured)",
+      "If you have the Synology Firewall enabled please seethis additional guidefor further info on exceptions and correct set up.",
+      "Changing the default WebUI login and password",
+      "If you skip this step you won\u2019t be able to log in.",
+      "Now the container has started open it in the Docker UI by clicking the qbittorrent container select \u2018details\u2019 and then view the \u2018log\u2019 tab. Within the logs you will see the login details.",
+      "Now before doing any more of the guide go to the Web UI by going to the IP of your NAS followed by port 8090 and log in. Then on the WebUI tab change the defaults to your own and save them.",
+      "Now continue on..",
+      "Router Port Forwarding",
+      "As you can imagine there are thousands of possible router configs out there, so you will need to check the manual for your own.",
+      "Essentially you need to Port Forward port 9854 TCP and UDP to your NAS IP address. This will make you connectable for all peers. Most routers support UPnP or NAT-PNP which will automatically set up ports however it\u2019s usually more secure to turn these off and do it manually.",
+      "Final qBittorrent Setup",
+      "As we have used /data/torrents as the mount point for our downloads we need to make sure qBittorrent uses this same file path. Open the settings and edit the following paths and save.",
+      "In prior versions of this guide I had a command to unzip RAR and ZIP files, I have removed this as it is not reliable, check out Unpackerr from the menu.",
+      "I am not going to walk through all the other settings as you can customise these as you wish.",
+      "That\u2019s it.",
+      "FAQs",
+      "Q: I am getting the \u2018errored\u2019 status for all my torrents",
+      "This is very likely a permissions issue, go to the User and Group guide and see the permission fixes towards the bottom.",
+      "Q: Everything seems to be connected but nothing is downloading.",
+      "Try grabbing theUbuntu torrentas that is a sure fire way of testing as generally it has over 3k seeds.",
+      "Looking for some help, join our Discord community",
+      "If you are struggling with any steps in the  guides or looking to branch out into other containers join our Discord community!",
+      "Buy me a beverage!",
+      "If you have found my site useful please consider pinging me a tip as it helps cover the cost of running things or just lets me stay hydrated. Plus 10% goes to the devs of the apps I do guides for every year."
+    ],
+    "code_blocks": [
+      "/docker/projects/qbit-compose/docker/qbittorrent",
+      "/docker/projects/qbit-compose/docker/qbittorrent",
+      "services:qbittorrent:image:linuxserver/qbittorrent:latestcontainer_name:qbittorrentenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-WEBUI_PORT=8090-TORRENTING_PORT=9854volumes:-/volume1/docker/qbittorrent:/config-/volume1/data/torrents:/data/torrentsports:-9854:9854/tcp# Forwarded Port on Router TCP-9854:9854/udp# Forwarded Port on Router TCP-8090:8090/tcp# port for qbittorrent webuinetwork_mode:synobridgerestart:always",
+      "services:qbittorrent:image:linuxserver/qbittorrent:latestcontainer_name:qbittorrentenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-WEBUI_PORT=8090-TORRENTING_PORT=9854volumes:-/volume1/docker/qbittorrent:/config-/volume1/data/torrents:/data/torrentsports:-9854:9854/tcp# Forwarded Port on Router TCP-9854:9854/udp# Forwarded Port on Router TCP-8090:8090/tcp# port for qbittorrent webuinetwork_mode:synobridgerestart:always",
+      "WARNING!Do not port forward or set up a reverse proxy for qBittorrents WebUI so it directly faces the internet - we have seen 5 or 6 people with compromised instances running Crypto mining. Always use something like Tailscale or a direct WireGuard or OpenVPN connection into your network."
+    ],
+    "images": [
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-44.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-25-1024x494.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-45.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-46.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-31.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-47.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-33-1024x494.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-48-1024x545.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/11/image-8-1024x258.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/11/image-9.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2024/02/2024-02-09_18-14.jpg",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/12/discord-1024x683.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/bmc-button-300x84.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/05/kofi_bg_tag_dark84.png",
+        "is_screenshot": false
+      }
+    ],
+    "external_links": [
+      "https://github.com/linuxserver/docker-qbittorrent",
+      "https://forum.qbittorrent.org/",
+      "https://en.wikipedia.org/wiki/List_of_tz_database_time_zones",
+      "https://ubuntu.com/download/alternative-downloads",
+      "https://discord.gg/cp48jWH3ER",
+      "https://www.buymeacoffee.com/drfrankenstein",
+      "https://ko-fi.com/drfrankenstein"
+    ],
+    "local_images": [
+      "images/qubittorrent/image-44.png",
+      "images/qubittorrent/image-25-1024x494.png",
+      "images/qubittorrent/image-45.png",
+      "images/qubittorrent/image-46.png",
+      "images/qubittorrent/image-31.png",
+      "images/qubittorrent/image-47.png",
+      "images/qubittorrent/image-33-1024x494.png",
+      "images/qubittorrent/image-48-1024x545.png",
+      "images/qubittorrent/image-8-1024x258.png",
+      "images/qubittorrent/image-9.png",
+      "images/qubittorrent/2024-02-09_18-14.jpg"
+    ]
+  }
+]

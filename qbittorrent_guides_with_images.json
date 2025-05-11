@@ -1,0 +1,325 @@
+[
+  {
+    "url": "https://drfrankenstein.co.uk/qbittorrent-with-gluetun-vpn-in-container-manager-on-a-synology-nas/",
+    "paragraphs": [
+      "Last updated on 29 April 2025",
+      "What are qBittorrent and GlueTUN?",
+      "qBittorrent is a torrent downloader and GlueTUN is the Docker container that has pre-configured VPN connections for numerous VPN providers.",
+      "Before you start check theGlueTUN Wikito see if your provider is on the supported list.",
+      "Also, if you are yet to choose a provider I currently use AirVPN which has nice easy port forwarding and is P2P friendly.This is my affiliate linkif you fancy signing up.",
+      "Useful external links for this guide",
+      "GlueTUN WikiGlueTUN Docker GitHubLinuxserver qBittorrent Container GitHubqBittorrent Forums",
+      "Let\u2019s Begin",
+      "In this guide I will take you through the steps to get qBittorrent up and running in Docker and a separate GlueTUN VPN container. By having a separate container for the VPN connection we can use it in the future for other applications.",
+      "In order for you to successfully use this guide please complete the three preceding guides",
+      "Docker Package, SSD and Memory Recommendations",
+      "Step 1: Directory Setup Guide",
+      "Step 2: Setting up a restricted Docker user",
+      "Step 3: Setting up a Docker Bridge Network (synobridge)",
+      "Folder Setup",
+      "Let\u2019s start by getting some folders set up for the containers to use. Open up File Station create the following.",
+      "Setting up the TUN start up script",
+      "In order for the VPN connection to work we need to make sure the TUN Interface is available to make the connection to a VPN provider. In order to ensure it is available even after a reboot we will set up a small script.",
+      "Open up Control Panel and then click on Task Scheduler",
+      "Next click on Create, Triggered Task then User Defined Script.",
+      "Enter the following:",
+      "On the Task Settings tab copy and paste the code below in the \u2018User-Defined script\u2019 section. It will look like screenshot.",
+      "You can now press OK  and agree to the warning message. Next run the script which will enable the TUN device.",
+      "You can now move on to the next step.",
+      "WireGuard Kernel Module (not required for OpenVPN)",
+      "The default GlueTUN WireGuard setup uses the \u2018Userspace\u2019 implementation of WireGuard which requires higher CPU resources. For example a 40MiB/s download via qBittorrent uses up to 176% in CPU (1.7 Cores) on my 1821+.By installing the appropriate Kernel Module this reduces down to 1 or 2% which frees up the CPU for other tasks.",
+      "BlackVoid.clubhave put together a Kernel Module for Synology which allows Gluetun to use the lower level Kernel to perform Wireguard duties make sure you drop them a thanks as this would not be possible without them!",
+      "https://www.blackvoid.club/wireguard-spk-for-your-synology-nas/",
+      "While on first glances it looks like a long installation process the page details a number of methods. I recommend having a read taking note of warnings and also if you want to build your own module it tells you how.The TLDR is below.",
+      "Find your model of NAS under the correct DSM version section (If you are following this guide it will be 7.2 or above) and download the pre compiled .spk file",
+      "Head into Package Center and click \u2018Manual Install\u2019 on the top right and install the .spk file anduntickthe box to run after install",
+      "Reboot",
+      "SSH Into your NAS (Just like in theUser Setup guide) and elevate yourself to root by typingsudo -iand entering your password",
+      "Enter this command and press enter to start up the module/var/packages/WireGuard/scripts/start",
+      "You should now be able to see the WireGuard package running in Package Center. Please note while I will try my best to support in relation to this module I may have to refer you on if it is a specific technical issue.",
+      "On to the next part.",
+      "Container Manager Project (aka Docker Compose)",
+      "Next we are going to set up a \u2018Project\u2019 in Container Manager, a project is used when you want multiple containers to all be loaded together and often rely on each other to function. In our case we want qBittorrent to load and talk to the GlueTUN VPN container.",
+      "Open up Container Manager and click on Project then on the right-hand side click \u2018Create\u2019",
+      "In the next screen we will set up our General Settings, enter the following:",
+      "OK we are now going to drop in our Docker Compose configuration (YAML) \u2013 You will find some presets below \u2013 A basic WireGuard or OpenVPN setup which covers the majority of providers, but I have also provided some standard WireGuard presets for AirVPN and ProtonVPN, select the one that is appropriate for you.See the GlueTUN Wiki for your specific provider steps or amendments",
+      "Docker Compose Presets",
+      "How to obtain your Wireguard Details from AirVPN",
+      "Login to your AirVPN account and go to the Client Area",
+      "Click onVPN Devicesand create a new device namedGlueTUN(you can name this anything)",
+      "Back in the Client Area selectConfig Generatorand select the followingLinuxTurn on WireGuardChoose the newly createdGlueTUNdeviceSelect your preferred Server or Region",
+      "Linux",
+      "Turn on WireGuard",
+      "Choose the newly createdGlueTUNdevice",
+      "Select your preferred Server or Region",
+      "Click Generate and download the config file.",
+      "From the downloaded config file use the following parts and populate them into the compose below.",
+      "Address = 10.141.x.x/32 #Nothing after this part",
+      "PrivateKey = uFdxxxxxxxxxxxxxxxx",
+      "PresharedKey = 4s2xxxxxxxxxxxxxxxxxxxx",
+      "In addition, there are some extra variables you can add to tell GlueTUN to use a specific Country, Region, Server etc. See this on theGlueTUN wikiand add based on your preferences.",
+      "Next you will want to set up port forwarding, so back in the Client Area, select Manage Ports and request a random port ensuring you turn on P2P and then assign the port to your GlueTUN device.",
+      "You will now enter this port number into the section of the compose labelled Firewall VPN Input Ports, make a note of this port number as you will set it as the Listening Port for the torrent client during its setup process. You can now continue with the guide to make the other general edits.",
+      "ProtonVPN previously used the Custom config in GlueTUN to get it working correctly, it has now changed again in version 3.40!",
+      "Thanks to Geebru on Discord for the settings and screenshots",
+      "Use any name you like",
+      "Select GNU/Linux",
+      "Turn on the followingBlock malware onlyModerate NATNAT-PMP (Port Forwarding)VPN Accelerator",
+      "Block malware only",
+      "Moderate NAT",
+      "NAT-PMP (Port Forwarding)",
+      "VPN Accelerator",
+      "Select a server that is physcially close to you and low usageEnsure its a P2P server (double left and right arrows)",
+      "Ensure its a P2P server (double left and right arrows)",
+      "You can then layer in the WireGuard details it provides you into the compose below.",
+      "(Note Proton Wireguard keys expire after 12 months so you will need to renew them after that period of time)",
+      "Once you have qBittorrent up and running you will need to add a couple of exceptions to its authentication settings to allow the command in the GlueTUN container to update the Listening port for you automatically.",
+      "As per the screenshot add an exception for our synobridge Docker Bridge. and also you may require for your local subnet. These are the same IPs you entered into the Firewall Outbound Subnets section of the compose (you do this shortly)",
+      "The #1 advertiser for VPNs \u2013 If you are still within your cooling off period I would recommend getting a refund and use a VPN provider who offers port forwarding such as AirVPN or ProtonVPN. If you are stuck with them you will have limited connectivity and will not be able to use private trackers.",
+      "You need to create Service Credentials for the Username and Password elements on the compose from within your Account.",
+      "Docker Compose General Edits",
+      "IDs and Timezone",
+      "First look for the lines below, they appear twice each, these control the containers access to our filesystem and also the user the containers run as.",
+      "Ports and Proxies",
+      "In the top Gluetun section you will notice that we have some additional ports assigned for a http proxy and Shadowsocks Proxy \u2013 this means you can direct traffic from other devices or applications on your network through the container! If you want to use these change the following.",
+      "Firewall Outbound Subnet",
+      "This section controls your ability to access the UIs of any containers running through the GlueTUN containers network.",
+      "The first part \u2018172.20.0.0/16\u2019 don\u2019t edit as this is our \u2018synobridge\u2019 network and allows other containers such as Radarr to access the download client.",
+      "We need to change the second IP after the comma this allows us to access the WebUI and containers via out local network.",
+      "This IP address (subnet) is easy to figure out. If you NAS IP is 192.168.0.27 your subnet is 192.168.0.0/24 (notice I just changed the last number before the /24 to 0)",
+      "Firewall Input Ports (Port Forwarding)",
+      "Volumes",
+      "By default, I have assumed you have your config files stored on /volume1 if these are located on another volume amend these lines accordingly.",
+      "Watchtower Exclusion",
+      "You don\u2019t need to change this, I added a label to avoid Watchtower automatically updating the GlueTUN container as it will always break the overall project which can be inconvenient if you are not around to fix it. You can update the container using the mini guide on the left menu of the site.",
+      "Docker Compose \u2013 Provider Specific Edits",
+      "This next bit is important and if you don\u2019t pay attention to the details you will have a harder time connecting up to your VPN provider, if you used the pre-configured settings for AirVPN or ProtonVPN skip this section.",
+      "Open up theGlueTun Wikiand in the list find your provider.",
+      "Let\u2019s use AirVPN as our example.",
+      "On the page you will see a number of key sections highlighting the variables that work with AirVPN.",
+      "Noteignore the \u2018docker run\u2019  code it\u2019s not relevant for what we are doing.",
+      "Read the compose section and make note of what is shown for either WireGuard or OpenVPN dependent on what you are using to connect and then make the same amendments to the compose you copied earlier.",
+      "Key differences are generally the SERVER_COUNTRIES / SERVER_CITIES or what keys are required and IP addresses etc.",
+      "I have provided some common defaults in the compose for you, but you need to amend them in line with your providers page.",
+      "If your provider is not supported, you canmake a request on GitHub to add it, or you can follow thecustom providersguidance on GlueTUNs WIKI.",
+      "Once you have checked for your provider, make the appropriate edits to the compose accordingly.",
+      "That completes the edits to the compose!",
+      "Click \u2018Next\u2019",
+      "You do not need to enable anything on the \u2018Web portal settings\u2019 screen click \u2018Next\u2019 again",
+      "On the final screen click Done which will begin the download of the container images and once downloaded they will be launched!",
+      "The images will now be downloaded and extracted. You should see \u2018Code 0\u2019 when it has finished.",
+      "You will now see your vpn-project running both containers should have a green status on the left-hand side.",
+      "Firewall Exceptions",
+      "(Skip if you don\u2019t have the Firewall configured)",
+      "If you have the Synology Firewall enabled please seethis additional guidefor further info on exceptions and correct set up.",
+      "Final qBittorrent Setup",
+      "Changing the default WebUI login and password",
+      "If you skip this step you won\u2019t be able to log in.",
+      "Now the container has started open it in the Docker UI and go  to the Log tab. Within the logs you will see the login details",
+      "Now before doing any more of the guide go to the Web UI by going to the IP of your NAS followed by port 8090 and log in. Then on the WebUI tab change the defaults to your own and save them.",
+      "As we have used /data/torrents as the mount point for our downloads we need to make sure qBittorrent uses this same file path. Open the settings and edit the following paths and save.",
+      "In prior versions of this guide I had a command to unzip RAR and ZIP files, I have removed this as it is not reliable, check out Unpackerr from the menu.",
+      "Advanced Network Settings (Use the TUN Device)",
+      "The last step is to tell qBittorrent to only use the tun0 interface for its traffic, go to the Advanced tab then from the \u2018Network Interfaces\u2019 drop down select \u2018tun0\u2019 and click Apply, If this doesn\u2019t appear the first time you may need to completely reboot your NAS.",
+      "I am not going to walk through all the other settings as you can customise these as you wish.",
+      "That\u2019s it you are completely set up, you can now start up the Project again from the \u2018Project\u2019 tab.",
+      "I recommend having a quick read through the FAQ as it covers some questions you may have!",
+      "FAQs",
+      "Q: My GlueTUN is unhealthy what can I do?",
+      "Or Join Discord for some more immediate help..",
+      "Q: How can I update the GlueTUN containers?",
+      "A: See the Updating Containers section on the menu.",
+      "Q:How can I be sure the VPN connection is working?",
+      "A: Go to the TorGuardCheck My Torrent IPsite, right-click on the Green banner and copy the link (it\u2019s a Magnet link) Then add this link into qBittorrent and start the torrent. Keeping the site open after a few seconds the site will show the IP address of the connection it finds. This will be of the VPN provider not your home IP. (Please note the torrent doesn\u2019t actually download anything it\u2019s purely doing an IP check)",
+      "Q: I am getting the \u2018errored\u2019 status for all my torrents",
+      "This is very likely a permissions issue, go to the User and Group guide and see the permission fixes towards the bottom.",
+      "Q: Everything seems to be connected but nothing is downloading.",
+      "Try grabbing theUbuntu torrentas that is a sure fire way of testing as generally it has over 3k seeds.",
+      "Are you using TorGuard \u2013 If so they block torrents on their US servers. Change to another country \u2013 Also while you are at it, you may need to configure port forwarding in your TorGuard account.",
+      "Q: My container doesn\u2019t seem to start on a reboot even with the TUN script.",
+      "A: I have seen this a few times and usually relates to the VPN not completing its connection fast enough before containers using the VPN start. You can try setting an additional startup script by doing the following.",
+      "Head into Control Panel and go to Task Scheduler Click Create > Triggered Task > User Defined Task",
+      "In the \u2018Task Settings\u2019 tab enter the following and then click Save",
+      "(thanks gtavo in the commands for the improvement!)",
+      "Once added Save and Container Manager will rebuild the project with the mod enabled, you will see it working in the qBittorrent containers log.",
+      "Q: I tried to start Deluge / qBittorrent manually, and it says \u2018Container must join at least one network\u2019",
+      "A: This is due to the Synology Container Manager GUI not understanding that the container will be on the GlueTUN \u2018network\u2019. You will need to start the container via the Project as it is part of the overall Project compose.",
+      "Q: How can I add additional services to the VPN container?",
+      "See some of my other GlueTUN related guides as they show the steps required to add other containers to GlueTUN",
+      "Looking for some help, join our Discord community",
+      "If you are struggling with any steps in the  guides or looking to branch out into other containers join our Discord community!",
+      "Buy me a beverage!",
+      "If you have found my site useful please consider pinging me a tip as it helps cover the cost of running things or just lets me stay hydrated. Plus 10% goes to the devs of the apps I do guides for every year."
+    ],
+    "code_blocks": [
+      "/docker/projects/vpnproject-compose/docker/gluetun/docker/qbittorrent",
+      "/docker/projects/vpnproject-compose/docker/gluetun/docker/qbittorrent",
+      "#!/bin/sh -einsmod/lib/modules/tun.ko",
+      "#!/bin/sh -einsmod/lib/modules/tun.ko",
+      "sudo -i",
+      "/var/packages/WireGuard/scripts/start",
+      "services:gluetun:image:qmcgaw/gluetun:latestcontainer_name:gluetuncap_add:-NET_ADMINdevices:-/dev/net/tun:/dev/net/tunports:-8888:8888/tcp# HTTP proxy-8388:8388/tcp# Shadowsocks-8388:8388/udp# Shadowsocks-8090:8090/tcp# port for qbittorrentvolumes:-/volume1/docker/gluetun:/gluetunenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-VPN_SERVICE_PROVIDER=NAMEOFYOURPROVIDER-VPN_TYPE=openvpn-OPENVPN_USER=abc-OPENVPN_PASSWORD=abc-SERVER_COUNTRIES=VPNSERVERCOUNTRY#Change based on the Wiki-HTTPPROXY=off#change to on if you wish to enable-SHADOWSOCKS=off#change to on if you wish to enable-FIREWALL_OUTBOUND_SUBNETS=172.20.0.0/16,192.168.0.0/24#      - FIREWALL_VPN_INPUT_PORTS=12345-UPDATER_PERIOD=24hnetwork_mode:synobridgelabels:-com.centurylinklabs.watchtower.enable=falsesecurity_opt:-no-new-privileges:truerestart:alwaysqbittorrent:image:linuxserver/qbittorrent:latestcontainer_name:qbittorrentenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-WEBUI_PORT=8090-UMASK=022volumes:-/volume1/docker/qbittorrent:/config-/volume1/data/torrents:/data/torrentsnetwork_mode:service:gluetun# run on the vpn networksecurity_opt:-no-new-privileges:truerestart:always",
+      "services:gluetun:image:qmcgaw/gluetun:latestcontainer_name:gluetuncap_add:-NET_ADMINdevices:-/dev/net/tun:/dev/net/tunports:-8888:8888/tcp# HTTP proxy-8388:8388/tcp# Shadowsocks-8388:8388/udp# Shadowsocks-8090:8090/tcp# port for qbittorrentvolumes:-/volume1/docker/gluetun:/gluetunenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-VPN_SERVICE_PROVIDER=NAMEOFYOURPROVIDER-VPN_TYPE=openvpn-OPENVPN_USER=abc-OPENVPN_PASSWORD=abc-SERVER_COUNTRIES=VPNSERVERCOUNTRY#Change based on the Wiki-HTTPPROXY=off#change to on if you wish to enable-SHADOWSOCKS=off#change to on if you wish to enable-FIREWALL_OUTBOUND_SUBNETS=172.20.0.0/16,192.168.0.0/24#      - FIREWALL_VPN_INPUT_PORTS=12345-UPDATER_PERIOD=24hnetwork_mode:synobridgelabels:-com.centurylinklabs.watchtower.enable=falsesecurity_opt:-no-new-privileges:truerestart:alwaysqbittorrent:image:linuxserver/qbittorrent:latestcontainer_name:qbittorrentenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-WEBUI_PORT=8090-UMASK=022volumes:-/volume1/docker/qbittorrent:/config-/volume1/data/torrents:/data/torrentsnetwork_mode:service:gluetun# run on the vpn networksecurity_opt:-no-new-privileges:truerestart:always",
+      "services:gluetun:image:qmcgaw/gluetun:latestcontainer_name:gluetuncap_add:-NET_ADMINdevices:-/dev/net/tun:/dev/net/tunports:-8888:8888/tcp# HTTP proxy-8388:8388/tcp# Shadowsocks-8388:8388/udp# Shadowsocks-8090:8090/tcp# port for qbittorrentvolumes:-/volume1/docker/gluetun:/gluetunenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-VPN_SERVICE_PROVIDER=NAMEOFYOURPROVIDER-VPN_TYPE=wireguard-WIREGUARD_PRIVATE_KEY=YOUR-PRIVATE-KEY-WIREGUARD_PRESHARED_KEY-WIREGUARD_ADDRESSES=10.x.x.x-SERVER_COUNTRIES=VPNSERVERCOUNTRY#Change based on the Wiki-HTTPPROXY=off#change to on if you wish to enable-SHADOWSOCKS=off#change to on if you wish to enable-FIREWALL_OUTBOUND_SUBNETS=172.20.0.0/16,192.168.0.0/24#      - FIREWALL_VPN_INPUT_PORTS=12345-UPDATER_PERIOD=24hnetwork_mode:synobridgelabels:-com.centurylinklabs.watchtower.enable=falsesecurity_opt:-no-new-privileges:truerestart:alwaysqbittorrent:image:linuxserver/qbittorrent:latestcontainer_name:qbittorrentenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-WEBUI_PORT=8090-UMASK=022volumes:-/volume1/docker/qbittorrent:/config-/volume1/data/torrents:/data/torrentsnetwork_mode:service:gluetun# run on the vpn networksecurity_opt:-no-new-privileges:truerestart:always",
+      "services:gluetun:image:qmcgaw/gluetun:latestcontainer_name:gluetuncap_add:-NET_ADMINdevices:-/dev/net/tun:/dev/net/tunports:-8888:8888/tcp# HTTP proxy-8388:8388/tcp# Shadowsocks-8388:8388/udp# Shadowsocks-8090:8090/tcp# port for qbittorrentvolumes:-/volume1/docker/gluetun:/gluetunenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-VPN_SERVICE_PROVIDER=NAMEOFYOURPROVIDER-VPN_TYPE=wireguard-WIREGUARD_PRIVATE_KEY=YOUR-PRIVATE-KEY-WIREGUARD_PRESHARED_KEY-WIREGUARD_ADDRESSES=10.x.x.x-SERVER_COUNTRIES=VPNSERVERCOUNTRY#Change based on the Wiki-HTTPPROXY=off#change to on if you wish to enable-SHADOWSOCKS=off#change to on if you wish to enable-FIREWALL_OUTBOUND_SUBNETS=172.20.0.0/16,192.168.0.0/24#      - FIREWALL_VPN_INPUT_PORTS=12345-UPDATER_PERIOD=24hnetwork_mode:synobridgelabels:-com.centurylinklabs.watchtower.enable=falsesecurity_opt:-no-new-privileges:truerestart:alwaysqbittorrent:image:linuxserver/qbittorrent:latestcontainer_name:qbittorrentenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-WEBUI_PORT=8090-UMASK=022volumes:-/volume1/docker/qbittorrent:/config-/volume1/data/torrents:/data/torrentsnetwork_mode:service:gluetun# run on the vpn networksecurity_opt:-no-new-privileges:truerestart:always",
+      "VPN Devices",
+      "GlueTUN",
+      "Config Generator",
+      "GlueTUN",
+      "services:gluetun:image:qmcgaw/gluetun:latestcontainer_name:gluetuncap_add:-NET_ADMINdevices:-/dev/net/tun:/dev/net/tunports:-8888:8888/tcp# HTTP proxy-8388:8388/tcp# Shadowsocks-8388:8388/udp# Shadowsocks-8090:8090/tcp# port for qbittorrentvolumes:-/volume1/docker/gluetun:/gluetunenvironment:-VPN_SERVICE_PROVIDER=airvpn-VPN_TYPE=wireguard-WIREGUARD_PRIVATE_KEY=-WIREGUARD_PRESHARED_KEY=-WIREGUARD_ADDRESSES=-TZ=Europe/London-PUID=1234-PGID=65432-HTTPPROXY=off-SHADOWSOCKS=off-FIREWALL_OUTBOUND_SUBNETS=172.20.0.0/16,192.168.0.0/24-FIREWALL_VPN_INPUT_PORTS=12345-UPDATER_PERIOD=24hnetwork_mode:synobridgelabels:-com.centurylinklabs.watchtower.enable=falsesecurity_opt:-no-new-privileges:truerestart:alwaysqbittorrent:image:linuxserver/qbittorrent:latestcontainer_name:qbittorrentenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-WEBUI_PORT=8090-UMASK=022volumes:-/volume1/docker/qbittorrent:/config-/volume1/data/torrents:/data/torrentsnetwork_mode:service:gluetun# run on the vpn networksecurity_opt:-no-new-privileges:truerestart:always",
+      "services:gluetun:image:qmcgaw/gluetun:latestcontainer_name:gluetuncap_add:-NET_ADMINdevices:-/dev/net/tun:/dev/net/tunports:-8888:8888/tcp# HTTP proxy-8388:8388/tcp# Shadowsocks-8388:8388/udp# Shadowsocks-8090:8090/tcp# port for qbittorrentvolumes:-/volume1/docker/gluetun:/gluetunenvironment:-VPN_SERVICE_PROVIDER=airvpn-VPN_TYPE=wireguard-WIREGUARD_PRIVATE_KEY=-WIREGUARD_PRESHARED_KEY=-WIREGUARD_ADDRESSES=-TZ=Europe/London-PUID=1234-PGID=65432-HTTPPROXY=off-SHADOWSOCKS=off-FIREWALL_OUTBOUND_SUBNETS=172.20.0.0/16,192.168.0.0/24-FIREWALL_VPN_INPUT_PORTS=12345-UPDATER_PERIOD=24hnetwork_mode:synobridgelabels:-com.centurylinklabs.watchtower.enable=falsesecurity_opt:-no-new-privileges:truerestart:alwaysqbittorrent:image:linuxserver/qbittorrent:latestcontainer_name:qbittorrentenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-WEBUI_PORT=8090-UMASK=022volumes:-/volume1/docker/qbittorrent:/config-/volume1/data/torrents:/data/torrentsnetwork_mode:service:gluetun# run on the vpn networksecurity_opt:-no-new-privileges:truerestart:always",
+      "services:gluetun:image:qmcgaw/gluetun:latestcontainer_name:gluetuncap_add:-NET_ADMINdevices:-/dev/net/tun:/dev/net/tunports:-8888:8888/tcp# HTTP proxy-8388:8388/tcp# Shadowsocks-8388:8388/udp# Shadowsocks-8090:8090# qBittorrentvolumes:-/volume1/docker/gluetun:/gluetunenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-VPN_SERVICE_PROVIDER=protonvpn-VPN_TYPE=wireguard-WIREGUARD_PRIVATE_KEY=#Your Key-SERVER_COUNTRIES=#Your Choice-PORT_FORWARD_ONLY=on-VPN_PORT_FORWARDING=on-VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c 'wget -O- --retry-connrefused --post-data \"json={\\\"listen_port\\\":{{PORTS}}}\" http://172.20.0.1:8090/api/v2/app/setPreferences 2>&1'-HTTPPROXY=off-SHADOWSOCKS=off-FIREWALL_OUTBOUND_SUBNETS=172.20.0.0/16,192.168.4.0/24-UPDATER_PERIOD=24hnetwork_mode:synobridgelabels:-com.centurylinklabs.watchtower.enable=falsesecurity_opt:-no-new-privileges:truerestart:alwaysqbittorrent:image:linuxserver/qbittorrent:latestcontainer_name:qbittorrentenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-WEBUI_PORT=8090-UMASK=022volumes:-/volume1/docker/qbittorrent:/config-/volume1/data/torrents:/data/torrentsnetwork_mode:service:gluetun# run on the vpn networksecurity_opt:-no-new-privileges:truerestart:always",
+      "services:gluetun:image:qmcgaw/gluetun:latestcontainer_name:gluetuncap_add:-NET_ADMINdevices:-/dev/net/tun:/dev/net/tunports:-8888:8888/tcp# HTTP proxy-8388:8388/tcp# Shadowsocks-8388:8388/udp# Shadowsocks-8090:8090# qBittorrentvolumes:-/volume1/docker/gluetun:/gluetunenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-VPN_SERVICE_PROVIDER=protonvpn-VPN_TYPE=wireguard-WIREGUARD_PRIVATE_KEY=#Your Key-SERVER_COUNTRIES=#Your Choice-PORT_FORWARD_ONLY=on-VPN_PORT_FORWARDING=on-VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c 'wget -O- --retry-connrefused --post-data \"json={\\\"listen_port\\\":{{PORTS}}}\" http://172.20.0.1:8090/api/v2/app/setPreferences 2>&1'-HTTPPROXY=off-SHADOWSOCKS=off-FIREWALL_OUTBOUND_SUBNETS=172.20.0.0/16,192.168.4.0/24-UPDATER_PERIOD=24hnetwork_mode:synobridgelabels:-com.centurylinklabs.watchtower.enable=falsesecurity_opt:-no-new-privileges:truerestart:alwaysqbittorrent:image:linuxserver/qbittorrent:latestcontainer_name:qbittorrentenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-WEBUI_PORT=8090-UMASK=022volumes:-/volume1/docker/qbittorrent:/config-/volume1/data/torrents:/data/torrentsnetwork_mode:service:gluetun# run on the vpn networksecurity_opt:-no-new-privileges:truerestart:always",
+      "services:gluetun:image:qmcgaw/gluetuncontainer_name:gluetuncap_add:-NET_ADMINdevices:-/dev/net/tun:/dev/net/tunports:-8888:8888/tcp# HTTP proxy-8388:8388/tcp# Shadowsocks-8388:8388/udp# Shadowsocks-8090:8090# qBittorrentvolumes:-/volume1/docker/gluetun:/gluetunenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-VPN_SERVICE_PROVIDER=nordvpn-OPENVPN_USER=#User and Pass are Service Credentials in your Nord account-OPENVPN_PASSWORD=-TZ=-HTTPPROXY=off#change to on if you wish to enable-SHADOWSOCKS=off#change to on if you wish to enable-FIREWALL_OUTBOUND_SUBNETS=172.20.0.0/16,192.168.XX.XX/24#change this in line with your subnet see note on guide.network_mode:synobridgelabels:-com.centurylinklabs.watchtower.enable=falserestart:unless-stoppedqbittorrent:image:linuxserver/qbittorrent:latestcontainer_name:qbittorrentenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-WEBUI_PORT=8090-UMASK=022volumes:-/volume1/docker/qbittorrent:/config-/volume1/data/torrents:/data/torrentsnetwork_mode:service:gluetun# run on the vpn networksecurity_opt:-no-new-privileges:truerestart:always",
+      "services:gluetun:image:qmcgaw/gluetuncontainer_name:gluetuncap_add:-NET_ADMINdevices:-/dev/net/tun:/dev/net/tunports:-8888:8888/tcp# HTTP proxy-8388:8388/tcp# Shadowsocks-8388:8388/udp# Shadowsocks-8090:8090# qBittorrentvolumes:-/volume1/docker/gluetun:/gluetunenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-VPN_SERVICE_PROVIDER=nordvpn-OPENVPN_USER=#User and Pass are Service Credentials in your Nord account-OPENVPN_PASSWORD=-TZ=-HTTPPROXY=off#change to on if you wish to enable-SHADOWSOCKS=off#change to on if you wish to enable-FIREWALL_OUTBOUND_SUBNETS=172.20.0.0/16,192.168.XX.XX/24#change this in line with your subnet see note on guide.network_mode:synobridgelabels:-com.centurylinklabs.watchtower.enable=falserestart:unless-stoppedqbittorrent:image:linuxserver/qbittorrent:latestcontainer_name:qbittorrentenvironment:-PUID=1234#CHANGE_TO_YOUR_UID-PGID=65432#CHANGE_TO_YOUR_GID-TZ=Europe/London#CHANGE_TO_YOUR_TZ-WEBUI_PORT=8090-UMASK=022volumes:-/volume1/docker/qbittorrent:/config-/volume1/data/torrents:/data/torrentsnetwork_mode:service:gluetun# run on the vpn networksecurity_opt:-no-new-privileges:truerestart:always",
+      "- FIREWALL_OUTBOUND_SUBNETS=172.20.0.0/16,192.168.0.0/24",
+      "- FIREWALL_OUTBOUND_SUBNETS=172.20.0.0/16,192.168.0.0/24",
+      "- FIREWALL_VPN_INPUT_PORTS=12345,56789",
+      "- FIREWALL_VPN_INPUT_PORTS=12345,56789",
+      "- /volume1/docker/gluetun:/gluetun- /volume1/docker/qbittorrent:/config- /volume1/data/torrents:/data/torrents",
+      "- /volume1/docker/gluetun:/gluetun- /volume1/docker/qbittorrent:/config- /volume1/data/torrents:/data/torrents",
+      "labels:- com.centurylinklabs.watchtower.enable=false",
+      "labels:- com.centurylinklabs.watchtower.enable=false",
+      "WARNING!Do not port forward or set up a reverse proxy for qBittorrents WebUI so it directly faces the internet - we have seen 5 or 6 people with compromised instances running Crypto mining. Always use something like Tailscale or a direct WireGuard or OpenVPN connection into your network.",
+      "sleep120docker-compose-pvpn-project-f/volume1/docker/projects/vpnproject-compose/compose.yamldownwaitdocker-compose-pvpn-project-f/volume1/docker/projects/vpnproject-compose/compose.yamlup-d",
+      "sleep120docker-compose-pvpn-project-f/volume1/docker/projects/vpnproject-compose/compose.yamldownwaitdocker-compose-pvpn-project-f/volume1/docker/projects/vpnproject-compose/compose.yamlup-d"
+    ],
+    "images": [
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/10/image-76.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/07/image-28.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/07/image-29.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/07/image-30.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/08/image-7.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/11/image.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/beforemodule.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/aftermodule.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/image-24.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-25-1024x494.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/10/image-70.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-146-1024x747.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-147-1024x329.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-149.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/07/image-1024x529.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2024/01/2024-01-22_10-14-971x1024.jpg",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-31.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-32.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/04/image-33-1024x494.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/10/image-80.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/11/image-8-1024x258.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/11/image-9.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2024/02/2024-02-09_18-14.jpg",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/02/image-1.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2022/12/discord-1024x683.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/09/bmc-button-300x84.png",
+        "is_screenshot": false
+      },
+      {
+        "url": "https://drfrankenstein.co.uk/wp-content/uploads/2023/05/kofi_bg_tag_dark84.png",
+        "is_screenshot": false
+      }
+    ],
+    "external_links": [],
+    "local_images": [
+      "images/qbittorrent/image-76.png",
+      "images/qbittorrent/image-28.png",
+      "images/qbittorrent/image-29.png",
+      "images/qbittorrent/image-30.png",
+      "images/qbittorrent/image-7.png",
+      "images/qbittorrent/image.png",
+      "images/qbittorrent/beforemodule.png",
+      "images/qbittorrent/aftermodule.png",
+      "images/qbittorrent/image-24.png",
+      "images/qbittorrent/image-25-1024x494.png",
+      "images/qbittorrent/image-70.png",
+      "images/qbittorrent/image-146-1024x747.png",
+      "images/qbittorrent/image-147-1024x329.png",
+      "images/qbittorrent/image-149.png",
+      "images/qbittorrent/image-1024x529.png",
+      "images/qbittorrent/2024-01-22_10-14-971x1024.jpg",
+      "images/qbittorrent/image-31.png",
+      "images/qbittorrent/image-32.png",
+      "images/qbittorrent/image-33-1024x494.png",
+      "images/qbittorrent/image-80.png",
+      "images/qbittorrent/image-8-1024x258.png",
+      "images/qbittorrent/image-9.png",
+      "images/qbittorrent/2024-02-09_18-14.jpg",
+      "images/qbittorrent/image-1.png"
+    ]
+  }
+]
