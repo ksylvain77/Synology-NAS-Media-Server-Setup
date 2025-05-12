@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  prowlarr:
+    image: linuxserver/prowlarr:latest
+    container_name: prowlarr
+    network_mode: synobridge
+    environment:
+      - PUID=1027
+      - PGID=65536
+      - TZ=America/New_York   # Change to your timezone
+    volumes:
+      - /volume1/configs/prowlarr:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+
+  flaresolverr:
+    image: flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    network_mode: synobridge
+    environment:
+      - TZ=America/New_York   # Change to your timezone
+    ports:
+      - 8191:8191
+    restart: unless-stopped 

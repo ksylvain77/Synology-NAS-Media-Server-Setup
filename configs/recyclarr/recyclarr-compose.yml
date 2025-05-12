@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr:latest
+    container_name: recyclarr
+    network_mode: synobridge
+    environment:
+      - TZ=America/New_York  # Change to your timezone if needed
+      - PUID=1027
+      - PGID=65536
+    user: "1027:65536"
+    volumes:
+      - /volume1/configs/recyclarr2:/config
+    restart: unless-stopped 
